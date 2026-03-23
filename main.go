@@ -271,11 +271,7 @@ func drawSkillsSection(pdf *fpdf.Fpdf, skills []SkillRow) {
 
 		pdf.SetLeftMargin(marginLeft)
 
-		maxY := labelEndY
-		if valueEndY > maxY {
-			maxY = valueEndY
-		}
-		pdf.SetY(maxY)
+		pdf.SetY(max(labelEndY, valueEndY))
 		pdf.Ln(2)
 	}
 }
