@@ -53,17 +53,25 @@ type Entry struct {
 
 type Section struct {
 	Title   string     `json:"title"`
-	Type    string     `json:"type"`
 	Text    string     `json:"text"`
 	Skills  []SkillRow `json:"skills"`
 	Entries []Entry    `json:"entries"`
+}
+
+type Sections struct {
+	About          *Section `json:"about"`
+	Skills         *Section `json:"skills"`
+	Experience     *Section `json:"experience"`
+	Education      *Section `json:"education"`
+	Courses        *Section `json:"courses"`
+	Certifications *Section `json:"certifications"`
 }
 
 type Resume struct {
 	Name     string    `json:"name"`
 	Title    string    `json:"title"`
 	Contacts []Contact `json:"contacts"`
-	Sections []Section `json:"sections"`
+	Sections Sections  `json:"sections"`
 }
 
 var currentSectionTitle string
@@ -99,8 +107,44 @@ func generatePDF(resume *Resume, outputPath string) error {
 
 	drawHeader(pdf, resume)
 
-	for _, section := range resume.Sections {
-		drawSection(pdf, section)
+	s := resume.Sections
+	if s.About != nil {
+		drawSection(pdf, s.About.Title, func() {
+			drawTextSection(pdf, s.About.Text)
+		})
+	}
+	if s.Skills != nil {
+		drawSection(pdf, s.Skills.Title, func() {
+			drawSkillsSection(pdf, s.Skills.Skills)
+		})
+	}
+	if s.Experience != nil {
+		drawSection(pdf, s.Experience.Title, func() {
+			for _, e := range s.Experience.Entries {
+				drawExperienceEntry(pdf, e)
+			}
+		})
+	}
+	if s.Education != nil {
+		drawSection(pdf, s.Education.Title, func() {
+			for _, e := range s.Education.Entries {
+				drawEducationEntry(pdf, e)
+			}
+		})
+	}
+	if s.Courses != nil {
+		drawSection(pdf, s.Courses.Title, func() {
+			for _, e := range s.Courses.Entries {
+				drawSimpleEntry(pdf, e)
+			}
+		})
+	}
+	if s.Certifications != nil {
+		drawSection(pdf, s.Certifications.Title, func() {
+			for _, e := range s.Certifications.Entries {
+				drawSimpleEntry(pdf, e)
+			}
+		})
 	}
 
 	return pdf.OutputFileAndClose(outputPath)
@@ -179,35 +223,18 @@ func drawSectionTitle(pdf *fpdf.Fpdf, title string) {
 	pdf.Ln(5)
 }
 
-func drawSection(pdf *fpdf.Fpdf, section Section) {
-	currentSectionTitle = section.Title
+func drawSection(pdf *fpdf.Fpdf, title string, draw func()) {
+	currentSectionTitle = title
 
 	_, pageH := pdf.GetPageSize()
 	remaining := pageH - marginBottom - pdf.GetY()
 	if remaining < 35 {
-		pdf.AddPage() // header func draws the title
+		pdf.AddPage()
 	} else {
-		drawSectionTitle(pdf, section.Title)
+		drawSectionTitle(pdf, title)
 	}
 
-	switch section.Type {
-	case "text":
-		drawTextSection(pdf, section.Text)
-	case "skills":
-		drawSkillsSection(pdf, section.Skills)
-	case "experience":
-		for _, entry := range section.Entries {
-			drawExperienceEntry(pdf, entry)
-		}
-	case "education":
-		for _, entry := range section.Entries {
-			drawEducationEntry(pdf, entry)
-		}
-	case "simple":
-		for _, entry := range section.Entries {
-			drawSimpleEntry(pdf, entry)
-		}
-	}
+	draw()
 
 	currentSectionTitle = ""
 	pdf.Ln(3)

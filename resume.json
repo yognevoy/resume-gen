@@ -6,15 +6,13 @@
     {"label": "GitHub", "url": "https://github.com/johndoe"},
     {"label": "LinkedIn", "url": "https://linkedin.com/in/johndoe"}
   ],
-  "sections": [
-    {
+  "sections": {
+    "about": {
       "title": "About",
-      "type": "text",
       "text": "Backend developer with 3+ years of experience building scalable web services and APIs. Focused on code quality, maintainability, and delivering reliable solutions."
     },
-    {
+    "skills": {
       "title": "Skills",
-      "type": "skills",
       "skills": [
         {"label": "Languages", "value": "Go, Python, SQL, Bash"},
         {"label": "Frameworks", "value": "Gin, FastAPI, gRPC"},
@@ -22,9 +20,8 @@
         {"label": "Infrastructure", "value": "Docker, Kubernetes, GitLab CI, Nginx"}
       ]
     },
-    {
+    "experience": {
       "title": "Experience",
-      "type": "experience",
       "entries": [
         {
           "company": "Acme Corp",
@@ -70,9 +67,8 @@
         }
       ]
     },
-    {
+    "education": {
       "title": "Education",
-      "type": "education",
       "entries": [
         {
           "title": "State Technical University",
@@ -84,9 +80,8 @@
         }
       ]
     },
-    {
+    "courses": {
       "title": "Courses",
-      "type": "simple",
       "entries": [
         {
           "title": "Go: Advanced Patterns and Concurrency",
@@ -94,9 +89,8 @@
         }
       ]
     },
-    {
+    "certifications": {
       "title": "Certifications",
-      "type": "simple",
       "entries": [
         {
           "title": "AWS Certified Developer — Associate",
@@ -104,5 +98,5 @@
         }
       ]
     }
-  ]
+  }
 }
