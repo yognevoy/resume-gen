@@ -23,6 +23,9 @@ const (
 	marginBottom = 20.0
 	pageWidth    = 210.0
 	contentWidth = pageWidth - marginLeft - marginRight
+
+	bodyFontSize = 10.0
+	lineHeight   = 5.5
 )
 
 type Contact struct {
@@ -241,9 +244,9 @@ func drawSection(pdf *fpdf.Fpdf, title string, draw func()) {
 }
 
 func drawTextSection(pdf *fpdf.Fpdf, text string) {
-	pdf.SetFont("Inter", "", 10)
+	pdf.SetFont("Inter", "", bodyFontSize)
 	pdf.SetTextColor(40, 40, 40)
-	pdf.MultiCell(contentWidth, 5.5, text, "", "J", false)
+	pdf.MultiCell(contentWidth, lineHeight, text, "", "J", false)
 }
 
 func drawSkillsSection(pdf *fpdf.Fpdf, skills []SkillRow) {
@@ -254,16 +257,16 @@ func drawSkillsSection(pdf *fpdf.Fpdf, skills []SkillRow) {
 
 		startY := pdf.GetY()
 
-		pdf.SetFont("Inter", "B", 10)
+		pdf.SetFont("Inter", "B", bodyFontSize)
 		pdf.SetLeftMargin(marginLeft)
 		pdf.SetX(marginLeft)
-		pdf.MultiCell(labelWidth, 5.5, skill.Label+":", "", "L", false)
+		pdf.MultiCell(labelWidth, lineHeight, skill.Label+":", "", "L", false)
 		labelEndY := pdf.GetY()
 
-		pdf.SetFont("Inter", "", 10)
+		pdf.SetFont("Inter", "", bodyFontSize)
 		pdf.SetXY(marginLeft+labelWidth, startY)
 		pdf.SetLeftMargin(marginLeft + labelWidth)
-		pdf.MultiCell(contentWidth-labelWidth, 5.5, skill.Value, "", "L", false)
+		pdf.MultiCell(contentWidth-labelWidth, lineHeight, skill.Value, "", "L", false)
 		valueEndY := pdf.GetY()
 
 		pdf.SetLeftMargin(marginLeft)
@@ -281,7 +284,7 @@ func drawTitleWithPeriod(pdf *fpdf.Fpdf, title, period string) {
 	if period != "" {
 		periodWidth := pdf.GetStringWidth(period) + 2
 		pdf.CellFormat(contentWidth-periodWidth, 6, title, "", 0, "L", false, 0, "")
-		pdf.SetFont("Inter", "", 10)
+		pdf.SetFont("Inter", "", bodyFontSize)
 		pdf.SetTextColor(60, 60, 60)
 		pdf.CellFormat(periodWidth, 6, period, "", 1, "R", false, 0, "")
 	} else {
@@ -291,19 +294,19 @@ func drawTitleWithPeriod(pdf *fpdf.Fpdf, title, period string) {
 
 func drawExperienceEntry(pdf *fpdf.Fpdf, entry Entry) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "B", 10)
+	pdf.SetFont("Inter", "B", bodyFontSize)
 	drawTitleWithPeriod(pdf, entry.Company, entry.Period)
 
-	pdf.SetFont("Inter", "", 10)
+	pdf.SetFont("Inter", "", bodyFontSize)
 	pdf.SetTextColor(60, 60, 60)
-	pdf.CellFormat(contentWidth, 5.5, entry.Title, "", 1, "L", false, 0, "")
+	pdf.CellFormat(contentWidth, lineHeight, entry.Title, "", 1, "L", false, 0, "")
 
 	pdf.Ln(3)
 
 	for _, group := range entry.Groups {
-		pdf.SetFont("Inter", "B", 10)
+		pdf.SetFont("Inter", "B", bodyFontSize)
 		pdf.SetTextColor(40, 40, 40)
-		pdf.CellFormat(contentWidth, 5.5, group.Label, "", 1, "L", false, 0, "")
+		pdf.CellFormat(contentWidth, lineHeight, group.Label, "", 1, "L", false, 0, "")
 		pdf.Ln(1)
 
 		for _, bullet := range group.Bullets {
@@ -322,13 +325,13 @@ func drawExperienceEntry(pdf *fpdf.Fpdf, entry Entry) {
 
 func drawEducationEntry(pdf *fpdf.Fpdf, entry Entry) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "B", 10)
+	pdf.SetFont("Inter", "B", bodyFontSize)
 	drawTitleWithPeriod(pdf, entry.Title, entry.Period)
 
-	pdf.SetFont("Inter", "", 10)
+	pdf.SetFont("Inter", "", bodyFontSize)
 	pdf.SetTextColor(60, 60, 60)
 	for _, line := range entry.Lines {
-		pdf.CellFormat(contentWidth, 5.5, line, "", 1, "L", false, 0, "")
+		pdf.CellFormat(contentWidth, lineHeight, line, "", 1, "L", false, 0, "")
 	}
 
 	pdf.Ln(4)
@@ -336,27 +339,27 @@ func drawEducationEntry(pdf *fpdf.Fpdf, entry Entry) {
 
 func drawSimpleEntry(pdf *fpdf.Fpdf, entry Entry) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "", 10)
-	pdf.CellFormat(contentWidth, 5.5, entry.Title, "", 1, "L", false, 0, "")
+	pdf.SetFont("Inter", "", bodyFontSize)
+	pdf.CellFormat(contentWidth, lineHeight, entry.Title, "", 1, "L", false, 0, "")
 
 	if entry.Subtitle != "" {
 		pdf.SetTextColor(60, 60, 60)
-		pdf.CellFormat(contentWidth, 5.5, entry.Subtitle, "", 1, "L", false, 0, "")
+		pdf.CellFormat(contentWidth, lineHeight, entry.Subtitle, "", 1, "L", false, 0, "")
 	}
 
 	pdf.Ln(3)
 }
 
 func drawBullet(pdf *fpdf.Fpdf, text string) {
-	pdf.SetFont("Inter", "", 10)
+	pdf.SetFont("Inter", "", bodyFontSize)
 	pdf.SetTextColor(40, 40, 40)
 	const bulletLeft = 4.0
 	const indent = 6.0
 	pdf.SetX(marginLeft + bulletLeft)
-	pdf.CellFormat(indent, 5.5, "\u2022", "", 0, "L", false, 0, "")
+	pdf.CellFormat(indent, lineHeight, "\u2022", "", 0, "L", false, 0, "")
 	pdf.SetLeftMargin(marginLeft + bulletLeft + indent)
 	pdf.SetX(marginLeft + bulletLeft + indent)
-	pdf.MultiCell(contentWidth-bulletLeft-indent, 5.5, text, "", "L", false)
+	pdf.MultiCell(contentWidth-bulletLeft-indent, lineHeight, text, "", "L", false)
 	pdf.SetLeftMargin(marginLeft)
 }
 
