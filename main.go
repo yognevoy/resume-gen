@@ -44,30 +44,67 @@ type BulletGroup struct {
 	Bullets []string `json:"bullets"`
 }
 
-type Entry struct {
-	Company  string        `json:"company"`
-	Title    string        `json:"title"`
-	Subtitle string        `json:"subtitle"`
-	Period   string        `json:"period"`
-	Lines    []string      `json:"lines"`
-	Groups   []BulletGroup `json:"groups"`
-	Bullets  []string      `json:"bullets"`
+type Job struct {
+	Company string        `json:"company"`
+	Title   string        `json:"title"`
+	Period  string        `json:"period"`
+	Groups  []BulletGroup `json:"groups"`
+	Bullets []string      `json:"bullets"`
 }
 
-type Section struct {
-	Title   string     `json:"title"`
-	Text    string     `json:"text"`
-	Skills  []SkillRow `json:"skills"`
-	Entries []Entry    `json:"entries"`
+type Degree struct {
+	Title  string   `json:"title"`
+	Period string   `json:"period"`
+	Lines  []string `json:"lines"`
+}
+
+type Course struct {
+	Title    string `json:"title"`
+	Subtitle string `json:"subtitle"`
+}
+
+type Certification struct {
+	Title    string `json:"title"`
+	Subtitle string `json:"subtitle"`
+}
+
+type AboutSection struct {
+	Title string `json:"title"`
+	Text  string `json:"text"`
+}
+
+type SkillsSection struct {
+	Title  string     `json:"title"`
+	Skills []SkillRow `json:"skills"`
+}
+
+type ExperienceSection struct {
+	Title   string `json:"title"`
+	Entries []Job  `json:"entries"`
+}
+
+type EducationSection struct {
+	Title   string   `json:"title"`
+	Entries []Degree `json:"entries"`
+}
+
+type CoursesSection struct {
+	Title   string   `json:"title"`
+	Entries []Course `json:"entries"`
+}
+
+type CertificationsSection struct {
+	Title   string          `json:"title"`
+	Entries []Certification `json:"entries"`
 }
 
 type Sections struct {
-	About          *Section `json:"about"`
-	Skills         *Section `json:"skills"`
-	Experience     *Section `json:"experience"`
-	Education      *Section `json:"education"`
-	Courses        *Section `json:"courses"`
-	Certifications *Section `json:"certifications"`
+	About          *AboutSection          `json:"about"`
+	Skills         *SkillsSection         `json:"skills"`
+	Experience     *ExperienceSection     `json:"experience"`
+	Education      *EducationSection      `json:"education"`
+	Courses        *CoursesSection        `json:"courses"`
+	Certifications *CertificationsSection `json:"certifications"`
 }
 
 type Resume struct {
@@ -124,28 +161,28 @@ func generatePDF(resume *Resume, outputPath string) error {
 	if s.Experience != nil {
 		drawSection(pdf, s.Experience.Title, func() {
 			for _, e := range s.Experience.Entries {
-				drawExperienceEntry(pdf, e)
+				drawJob(pdf, e)
 			}
 		})
 	}
 	if s.Education != nil {
 		drawSection(pdf, s.Education.Title, func() {
 			for _, e := range s.Education.Entries {
-				drawEducationEntry(pdf, e)
+				drawDegree(pdf, e)
 			}
 		})
 	}
 	if s.Courses != nil {
 		drawSection(pdf, s.Courses.Title, func() {
 			for _, e := range s.Courses.Entries {
-				drawSimpleEntry(pdf, e)
+				drawCourse(pdf, e)
 			}
 		})
 	}
 	if s.Certifications != nil {
 		drawSection(pdf, s.Certifications.Title, func() {
 			for _, e := range s.Certifications.Entries {
-				drawSimpleEntry(pdf, e)
+				drawCertification(pdf, e)
 			}
 		})
 	}
@@ -288,18 +325,18 @@ func drawTitleWithPeriod(pdf *fpdf.Fpdf, title, period string) {
 	}
 }
 
-func drawExperienceEntry(pdf *fpdf.Fpdf, entry Entry) {
+func drawJob(pdf *fpdf.Fpdf, job Job) {
 	pdf.SetTextColor(20, 20, 20)
 	pdf.SetFont("Inter", "B", bodyFontSize)
-	drawTitleWithPeriod(pdf, entry.Company, entry.Period)
+	drawTitleWithPeriod(pdf, job.Company, job.Period)
 
 	pdf.SetFont("Inter", "", bodyFontSize)
 	pdf.SetTextColor(60, 60, 60)
-	pdf.CellFormat(contentWidth, lineHeight, entry.Title, "", 1, "L", false, 0, "")
+	pdf.CellFormat(contentWidth, lineHeight, job.Title, "", 1, "L", false, 0, "")
 
 	pdf.Ln(3)
 
-	for _, group := range entry.Groups {
+	for _, group := range job.Groups {
 		pdf.SetFont("Inter", "B", bodyFontSize)
 		pdf.SetTextColor(40, 40, 40)
 		pdf.CellFormat(contentWidth, lineHeight, group.Label, "", 1, "L", false, 0, "")
@@ -312,35 +349,48 @@ func drawExperienceEntry(pdf *fpdf.Fpdf, entry Entry) {
 		pdf.Ln(2)
 	}
 
-	for _, bullet := range entry.Bullets {
+	for _, bullet := range job.Bullets {
 		drawBullet(pdf, bullet)
 	}
 
 	pdf.Ln(2)
 }
 
-func drawEducationEntry(pdf *fpdf.Fpdf, entry Entry) {
+func drawDegree(pdf *fpdf.Fpdf, degree Degree) {
 	pdf.SetTextColor(20, 20, 20)
 	pdf.SetFont("Inter", "B", bodyFontSize)
-	drawTitleWithPeriod(pdf, entry.Title, entry.Period)
+	drawTitleWithPeriod(pdf, degree.Title, degree.Period)
 
 	pdf.SetFont("Inter", "", bodyFontSize)
 	pdf.SetTextColor(60, 60, 60)
-	for _, line := range entry.Lines {
+	for _, line := range degree.Lines {
 		pdf.CellFormat(contentWidth, lineHeight, line, "", 1, "L", false, 0, "")
 	}
 
 	pdf.Ln(4)
 }
 
-func drawSimpleEntry(pdf *fpdf.Fpdf, entry Entry) {
+func drawCourse(pdf *fpdf.Fpdf, course Course) {
 	pdf.SetTextColor(20, 20, 20)
 	pdf.SetFont("Inter", "", bodyFontSize)
-	pdf.CellFormat(contentWidth, lineHeight, entry.Title, "", 1, "L", false, 0, "")
+	pdf.CellFormat(contentWidth, lineHeight, course.Title, "", 1, "L", false, 0, "")
 
-	if entry.Subtitle != "" {
+	if course.Subtitle != "" {
 		pdf.SetTextColor(60, 60, 60)
-		pdf.CellFormat(contentWidth, lineHeight, entry.Subtitle, "", 1, "L", false, 0, "")
+		pdf.CellFormat(contentWidth, lineHeight, course.Subtitle, "", 1, "L", false, 0, "")
+	}
+
+	pdf.Ln(3)
+}
+
+func drawCertification(pdf *fpdf.Fpdf, cert Certification) {
+	pdf.SetTextColor(20, 20, 20)
+	pdf.SetFont("Inter", "", bodyFontSize)
+	pdf.CellFormat(contentWidth, lineHeight, cert.Title, "", 1, "L", false, 0, "")
+
+	if cert.Subtitle != "" {
+		pdf.SetTextColor(60, 60, 60)
+		pdf.CellFormat(contentWidth, lineHeight, cert.Subtitle, "", 1, "L", false, 0, "")
 	}
 
 	pdf.Ln(3)
