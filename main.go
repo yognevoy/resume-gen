@@ -277,19 +277,22 @@ func drawSkillsSection(pdf *fpdf.Fpdf, skills []SkillRow) {
 	}
 }
 
+func drawTitleWithPeriod(pdf *fpdf.Fpdf, title, period string) {
+	if period != "" {
+		periodWidth := pdf.GetStringWidth(period) + 2
+		pdf.CellFormat(contentWidth-periodWidth, 6, title, "", 0, "L", false, 0, "")
+		pdf.SetFont("Inter", "", 10)
+		pdf.SetTextColor(60, 60, 60)
+		pdf.CellFormat(periodWidth, 6, period, "", 1, "R", false, 0, "")
+	} else {
+		pdf.CellFormat(contentWidth, 6, title, "", 1, "L", false, 0, "")
+	}
+}
+
 func drawExperienceEntry(pdf *fpdf.Fpdf, entry Entry) {
 	pdf.SetTextColor(20, 20, 20)
 	pdf.SetFont("Inter", "B", 10)
-
-	if entry.Period != "" {
-		periodWidth := pdf.GetStringWidth(entry.Period) + 2
-		pdf.CellFormat(contentWidth-periodWidth, 6, entry.Company, "", 0, "L", false, 0, "")
-		pdf.SetFont("Inter", "", 10)
-		pdf.SetTextColor(60, 60, 60)
-		pdf.CellFormat(periodWidth, 6, entry.Period, "", 1, "R", false, 0, "")
-	} else {
-		pdf.CellFormat(contentWidth, 6, entry.Company, "", 1, "L", false, 0, "")
-	}
+	drawTitleWithPeriod(pdf, entry.Company, entry.Period)
 
 	pdf.SetFont("Inter", "", 10)
 	pdf.SetTextColor(60, 60, 60)
@@ -320,16 +323,7 @@ func drawExperienceEntry(pdf *fpdf.Fpdf, entry Entry) {
 func drawEducationEntry(pdf *fpdf.Fpdf, entry Entry) {
 	pdf.SetTextColor(20, 20, 20)
 	pdf.SetFont("Inter", "B", 10)
-
-	if entry.Period != "" {
-		periodWidth := pdf.GetStringWidth(entry.Period) + 2
-		pdf.CellFormat(contentWidth-periodWidth, 6, entry.Title, "", 0, "L", false, 0, "")
-		pdf.SetFont("Inter", "", 10)
-		pdf.SetTextColor(60, 60, 60)
-		pdf.CellFormat(periodWidth, 6, entry.Period, "", 1, "R", false, 0, "")
-	} else {
-		pdf.CellFormat(contentWidth, 6, entry.Title, "", 1, "L", false, 0, "")
-	}
+	drawTitleWithPeriod(pdf, entry.Title, entry.Period)
 
 	pdf.SetFont("Inter", "", 10)
 	pdf.SetTextColor(60, 60, 60)
