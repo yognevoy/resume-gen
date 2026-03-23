@@ -356,12 +356,13 @@ func drawSimpleEntry(pdf *fpdf.Fpdf, entry Entry) {
 func drawBullet(pdf *fpdf.Fpdf, text string) {
 	pdf.SetFont("Inter", "", 10)
 	pdf.SetTextColor(40, 40, 40)
+	const bulletLeft = 4.0
 	const indent = 6.0
-	pdf.SetX(marginLeft)
+	pdf.SetX(marginLeft + bulletLeft)
 	pdf.CellFormat(indent, 5.5, "\u2022", "", 0, "L", false, 0, "")
-	pdf.SetLeftMargin(marginLeft + indent)
-	pdf.SetX(marginLeft + indent)
-	pdf.MultiCell(contentWidth-indent, 5.5, text, "", "L", false)
+	pdf.SetLeftMargin(marginLeft + bulletLeft + indent)
+	pdf.SetX(marginLeft + bulletLeft + indent)
+	pdf.MultiCell(contentWidth-bulletLeft-indent, 5.5, text, "", "L", false)
 	pdf.SetLeftMargin(marginLeft)
 }
 
