@@ -1,0 +1,108 @@
+{
+  "name": "John Doe",
+  "title": "Backend Developer",
+  "contacts": [
+    {"value": "john@example.com"},
+    {"label": "GitHub", "url": "https://github.com/johndoe"},
+    {"label": "LinkedIn", "url": "https://linkedin.com/in/johndoe"}
+  ],
+  "sections": [
+    {
+      "title": "About",
+      "type": "text",
+      "text": "Backend developer with 3+ years of experience building scalable web services and APIs. Focused on code quality, maintainability, and delivering reliable solutions."
+    },
+    {
+      "title": "Skills",
+      "type": "skills",
+      "skills": [
+        {"label": "Languages", "value": "Go, Python, SQL, Bash"},
+        {"label": "Frameworks", "value": "Gin, FastAPI, gRPC"},
+        {"label": "Databases", "value": "PostgreSQL, Redis, ClickHouse"},
+        {"label": "Infrastructure", "value": "Docker, Kubernetes, GitLab CI, Nginx"}
+      ]
+    },
+    {
+      "title": "Experience",
+      "type": "experience",
+      "entries": [
+        {
+          "company": "Acme Corp",
+          "title": "Backend Developer",
+          "period": "March 2023 — Present",
+          "groups": [
+            {
+              "label": "Responsibilities",
+              "bullets": [
+                "Developed and maintained microservices in Go.",
+                "Designed REST and gRPC APIs consumed by mobile and web clients.",
+                "Participated in code reviews and maintained internal development standards."
+              ]
+            },
+            {
+              "label": "Achievements",
+              "bullets": [
+                "Reduced average API response time by 40% through query optimization and caching.",
+                "Set up CI/CD pipelines with GitLab CI, cutting release errors across a team of 4."
+              ]
+            }
+          ]
+        },
+        {
+          "company": "Startup Inc",
+          "title": "Junior Backend Developer",
+          "period": "June 2022 — March 2023",
+          "groups": [
+            {
+              "label": "Responsibilities",
+              "bullets": [
+                "Built internal REST APIs and integrated third-party services.",
+                "Worked with legacy code: analysis, refactoring, minor fixes."
+              ]
+            },
+            {
+              "label": "Achievements",
+              "bullets": [
+                "Implemented a Telegram bot integration, centralizing customer support in one interface."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Education",
+      "type": "education",
+      "entries": [
+        {
+          "title": "State Technical University",
+          "lines": [
+            "Faculty of Information Technology,",
+            "Computer Science and Engineering"
+          ],
+          "period": "September 2018 — June 2022"
+        }
+      ]
+    },
+    {
+      "title": "Courses",
+      "type": "simple",
+      "entries": [
+        {
+          "title": "Go: Advanced Patterns and Concurrency",
+          "subtitle": "Coursera"
+        }
+      ]
+    },
+    {
+      "title": "Certifications",
+      "type": "simple",
+      "entries": [
+        {
+          "title": "AWS Certified Developer — Associate",
+          "subtitle": "Amazon Web Services"
+        }
+      ]
+    }
+  ]
+}
