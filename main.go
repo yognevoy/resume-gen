@@ -24,6 +24,9 @@ const (
 	pageWidth    = 210.0
 	contentWidth = pageWidth - marginLeft - marginRight
 
+	nameFontSize    = 24.0
+	titleFontSize   = 11.0
+	contactFontSize = 9.0
 	bodyFontSize    = 10.0
 	lineHeight      = 5.5
 	minSectionSpace = 35.0
@@ -193,11 +196,11 @@ func generatePDF(resume *Resume, outputPath string) error {
 
 func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "B", 24)
+	pdf.SetFont("Inter", "B", nameFontSize)
 	pdf.CellFormat(contentWidth, 11, resume.Name, "", 1, "C", false, 0, "")
 
 	pdf.Ln(1)
-	pdf.SetFont("Inter", "", 11)
+	pdf.SetFont("Inter", "", titleFontSize)
 	pdf.SetTextColor(80, 80, 80)
 	pdf.CellFormat(contentWidth, 6, resume.Title, "", 1, "C", false, 0, "")
 
@@ -206,9 +209,7 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 		pdf.SetTextColor(80, 80, 80)
 
 		const sep = "   |   "
-		const fontSize = 9.0
-
-		pdf.SetFont("Inter", "", fontSize)
+		pdf.SetFont("Inter", "", contactFontSize)
 
 		totalWidth := 0.0
 		for i, c := range resume.Contacts {
@@ -230,14 +231,14 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 			if c.Label != "" {
 				text = c.Label
 			}
-			pdf.SetFont("Inter", "U", fontSize)
+			pdf.SetFont("Inter", "U", contactFontSize)
 			w := pdf.GetStringWidth(text)
 			pdf.SetXY(x, y)
 			pdf.CellFormat(w, 5, text, "", 0, "L", false, 0, c.URL)
 			x += w
 
 			if i < len(resume.Contacts)-1 {
-				pdf.SetFont("Inter", "", fontSize)
+				pdf.SetFont("Inter", "", contactFontSize)
 				sepW := pdf.GetStringWidth(sep)
 				pdf.SetXY(x, y)
 				pdf.CellFormat(sepW, 5, sep, "", 0, "L", false, 0, "")
@@ -253,7 +254,7 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 
 func drawSectionTitle(pdf *fpdf.Fpdf, title string) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "B", 11)
+	pdf.SetFont("Inter", "B", titleFontSize)
 	pdf.CellFormat(contentWidth, 7, title, "", 1, "L", false, 0, "")
 
 	pdf.Ln(2)
