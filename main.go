@@ -151,12 +151,12 @@ func generatePDF(resume *Resume, outputPath string) error {
 	s := resume.Sections
 	if s.About != nil {
 		drawSection(pdf, s.About.Title, func() {
-			drawTextSection(pdf, s.About.Text)
+			drawAbout(pdf, s.About.Text)
 		})
 	}
 	if s.Skills != nil {
 		drawSection(pdf, s.Skills.Title, func() {
-			drawSkillsSection(pdf, s.Skills.Skills)
+			drawSkills(pdf, s.Skills.Skills)
 		})
 	}
 	if s.Experience != nil {
@@ -281,13 +281,13 @@ func drawSection(pdf *fpdf.Fpdf, title string, draw func()) {
 	pdf.Ln(3)
 }
 
-func drawTextSection(pdf *fpdf.Fpdf, text string) {
+func drawAbout(pdf *fpdf.Fpdf, text string) {
 	pdf.SetFont("Inter", "", bodyFontSize)
 	pdf.SetTextColor(40, 40, 40)
 	pdf.MultiCell(contentWidth, lineHeight, text, "", "J", false)
 }
 
-func drawSkillsSection(pdf *fpdf.Fpdf, skills []SkillRow) {
+func drawSkills(pdf *fpdf.Fpdf, skills []SkillRow) {
 	const labelWidth = 52.0
 
 	for _, skill := range skills {
