@@ -113,7 +113,7 @@ type Sections struct {
 
 type Resume struct {
 	Name     string    `json:"name"`
-	Title    string    `json:"title"`
+	Position string    `json:"position"`
 	Contacts []Contact `json:"contacts"`
 	Sections Sections  `json:"sections"`
 }
@@ -202,7 +202,7 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 	pdf.Ln(1)
 	pdf.SetFont("Inter", "", titleFontSize)
 	pdf.SetTextColor(80, 80, 80)
-	pdf.CellFormat(contentWidth, 6, resume.Title, "", 1, "C", false, 0, "")
+	pdf.CellFormat(contentWidth, 6, resume.Position, "", 1, "C", false, 0, "")
 
 	if len(resume.Contacts) > 0 {
 		pdf.Ln(2)

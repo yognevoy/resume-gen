@@ -1,6 +1,6 @@
 {
   "name": "John Doe",
-  "title": "Backend Developer",
+  "position": "Backend Developer",
   "contacts": [
     {"value": "john@example.com"},
     {"label": "GitHub", "url": "https://github.com/johndoe"},
