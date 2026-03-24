@@ -24,12 +24,13 @@ const (
 	pageWidth    = 210.0
 	contentWidth = pageWidth - marginLeft - marginRight
 
-	nameFontSize    = 24.0
-	titleFontSize   = 11.0
-	contactFontSize = 9.0
-	bodyFontSize    = 10.0
-	lineHeight      = 5.5
-	minSectionSpace = 35.0
+	nameFontSize     = 24.0
+	positionFontSize = 11.0
+	titleFontSize    = 11.0
+	contactFontSize  = 9.0
+	bodyFontSize     = 10.0
+	lineHeight       = 5.5
+	minSectionSpace  = 35.0
 )
 
 type Contact struct {
@@ -200,7 +201,7 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 	pdf.CellFormat(contentWidth, 11, resume.Name, "", 1, "C", false, 0, "")
 
 	pdf.Ln(1)
-	pdf.SetFont("Inter", "", titleFontSize)
+	pdf.SetFont("Inter", "", positionFontSize)
 	pdf.SetTextColor(80, 80, 80)
 	pdf.CellFormat(contentWidth, 6, resume.Position, "", 1, "C", false, 0, "")
 
