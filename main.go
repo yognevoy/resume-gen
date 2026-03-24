@@ -24,8 +24,9 @@ const (
 	pageWidth    = 210.0
 	contentWidth = pageWidth - marginLeft - marginRight
 
-	bodyFontSize = 10.0
-	lineHeight   = 5.5
+	bodyFontSize    = 10.0
+	lineHeight      = 5.5
+	minSectionSpace = 35.0
 )
 
 type Contact struct {
@@ -268,7 +269,7 @@ func drawSection(pdf *fpdf.Fpdf, title string, draw func()) {
 
 	_, pageH := pdf.GetPageSize()
 	remaining := pageH - marginBottom - pdf.GetY()
-	if remaining < 35 {
+	if remaining < minSectionSpace {
 		pdf.AddPage()
 	} else {
 		drawSectionTitle(pdf, title)
