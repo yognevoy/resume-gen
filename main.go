@@ -11,12 +11,14 @@ import (
 )
 
 //go:embed fonts/Inter_18pt-Regular.ttf
-var interRegular []byte
+var fontRegular []byte
 
 //go:embed fonts/Inter_18pt-Bold.ttf
-var interBold []byte
+var fontBold []byte
 
 const (
+	fontName = "Inter"
+
 	marginLeft   = 20.0
 	marginRight  = 20.0
 	marginTop    = 22.0
@@ -138,8 +140,8 @@ func generatePDF(resume *Resume, outputPath string) error {
 	pdf.SetMargins(marginLeft, marginTop, marginRight)
 	pdf.SetAutoPageBreak(true, marginBottom)
 
-	pdf.AddUTF8FontFromBytes("Inter", "", interRegular)
-	pdf.AddUTF8FontFromBytes("Inter", "B", interBold)
+	pdf.AddUTF8FontFromBytes(fontName, "", fontRegular)
+	pdf.AddUTF8FontFromBytes(fontName, "B", fontBold)
 
 	pdf.SetHeaderFunc(func() {
 		if currentSectionTitle != "" {
@@ -197,11 +199,11 @@ func generatePDF(resume *Resume, outputPath string) error {
 
 func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "B", nameFontSize)
+	pdf.SetFont(fontName, "B", nameFontSize)
 	pdf.CellFormat(contentWidth, 11, resume.Name, "", 1, "C", false, 0, "")
 
 	pdf.Ln(1)
-	pdf.SetFont("Inter", "", positionFontSize)
+	pdf.SetFont(fontName, "", positionFontSize)
 	pdf.SetTextColor(80, 80, 80)
 	pdf.CellFormat(contentWidth, 6, resume.Position, "", 1, "C", false, 0, "")
 
@@ -210,7 +212,7 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 		pdf.SetTextColor(80, 80, 80)
 
 		const sep = "   |   "
-		pdf.SetFont("Inter", "", contactFontSize)
+		pdf.SetFont(fontName, "", contactFontSize)
 
 		totalWidth := 0.0
 		for i, c := range resume.Contacts {
@@ -232,14 +234,14 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 			if c.Label != "" {
 				text = c.Label
 			}
-			pdf.SetFont("Inter", "U", contactFontSize)
+			pdf.SetFont(fontName, "U", contactFontSize)
 			w := pdf.GetStringWidth(text)
 			pdf.SetXY(x, y)
 			pdf.CellFormat(w, 5, text, "", 0, "L", false, 0, c.URL)
 			x += w
 
 			if i < len(resume.Contacts)-1 {
-				pdf.SetFont("Inter", "", contactFontSize)
+				pdf.SetFont(fontName, "", contactFontSize)
 				sepW := pdf.GetStringWidth(sep)
 				pdf.SetXY(x, y)
 				pdf.CellFormat(sepW, 5, sep, "", 0, "L", false, 0, "")
@@ -255,7 +257,7 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 
 func drawSectionTitle(pdf *fpdf.Fpdf, title string) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "B", titleFontSize)
+	pdf.SetFont(fontName, "B", titleFontSize)
 	pdf.CellFormat(contentWidth, 7, title, "", 1, "L", false, 0, "")
 
 	pdf.Ln(2)
@@ -284,7 +286,7 @@ func drawSection(pdf *fpdf.Fpdf, title string, draw func()) {
 }
 
 func drawAbout(pdf *fpdf.Fpdf, text string) {
-	pdf.SetFont("Inter", "", bodyFontSize)
+	pdf.SetFont(fontName, "", bodyFontSize)
 	pdf.SetTextColor(40, 40, 40)
 	pdf.MultiCell(contentWidth, lineHeight, text, "", "J", false)
 }
@@ -297,13 +299,13 @@ func drawSkills(pdf *fpdf.Fpdf, skills []SkillRow) {
 
 		startY := pdf.GetY()
 
-		pdf.SetFont("Inter", "B", bodyFontSize)
+		pdf.SetFont(fontName, "B", bodyFontSize)
 		pdf.SetLeftMargin(marginLeft)
 		pdf.SetX(marginLeft)
 		pdf.MultiCell(labelWidth, lineHeight, skill.Label+":", "", "L", false)
 		labelEndY := pdf.GetY()
 
-		pdf.SetFont("Inter", "", bodyFontSize)
+		pdf.SetFont(fontName, "", bodyFontSize)
 		pdf.SetXY(marginLeft+labelWidth, startY)
 		pdf.SetLeftMargin(marginLeft + labelWidth)
 		pdf.MultiCell(contentWidth-labelWidth, lineHeight, skill.Value, "", "L", false)
@@ -320,7 +322,7 @@ func drawTitleWithPeriod(pdf *fpdf.Fpdf, title, period string) {
 	if period != "" {
 		periodWidth := pdf.GetStringWidth(period) + 2
 		pdf.CellFormat(contentWidth-periodWidth, 6, title, "", 0, "L", false, 0, "")
-		pdf.SetFont("Inter", "", bodyFontSize)
+		pdf.SetFont(fontName, "", bodyFontSize)
 		pdf.SetTextColor(60, 60, 60)
 		pdf.CellFormat(periodWidth, 6, period, "", 1, "R", false, 0, "")
 	} else {
@@ -330,17 +332,17 @@ func drawTitleWithPeriod(pdf *fpdf.Fpdf, title, period string) {
 
 func drawJob(pdf *fpdf.Fpdf, job Job) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "B", bodyFontSize)
+	pdf.SetFont(fontName, "B", bodyFontSize)
 	drawTitleWithPeriod(pdf, job.Company, job.Period)
 
-	pdf.SetFont("Inter", "", bodyFontSize)
+	pdf.SetFont(fontName, "", bodyFontSize)
 	pdf.SetTextColor(60, 60, 60)
 	pdf.CellFormat(contentWidth, lineHeight, job.Title, "", 1, "L", false, 0, "")
 
 	pdf.Ln(3)
 
 	for _, group := range job.Groups {
-		pdf.SetFont("Inter", "B", bodyFontSize)
+		pdf.SetFont(fontName, "B", bodyFontSize)
 		pdf.SetTextColor(40, 40, 40)
 		pdf.CellFormat(contentWidth, lineHeight, group.Label, "", 1, "L", false, 0, "")
 		pdf.Ln(1)
@@ -361,10 +363,10 @@ func drawJob(pdf *fpdf.Fpdf, job Job) {
 
 func drawDegree(pdf *fpdf.Fpdf, degree Degree) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "B", bodyFontSize)
+	pdf.SetFont(fontName, "B", bodyFontSize)
 	drawTitleWithPeriod(pdf, degree.Title, degree.Period)
 
-	pdf.SetFont("Inter", "", bodyFontSize)
+	pdf.SetFont(fontName, "", bodyFontSize)
 	pdf.SetTextColor(60, 60, 60)
 	for _, line := range degree.Lines {
 		pdf.CellFormat(contentWidth, lineHeight, line, "", 1, "L", false, 0, "")
@@ -375,7 +377,7 @@ func drawDegree(pdf *fpdf.Fpdf, degree Degree) {
 
 func drawCourse(pdf *fpdf.Fpdf, course Course) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "", bodyFontSize)
+	pdf.SetFont(fontName, "", bodyFontSize)
 	pdf.CellFormat(contentWidth, lineHeight, course.Title, "", 1, "L", false, 0, "")
 
 	if course.Subtitle != "" {
@@ -388,7 +390,7 @@ func drawCourse(pdf *fpdf.Fpdf, course Course) {
 
 func drawCertification(pdf *fpdf.Fpdf, cert Certification) {
 	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont("Inter", "", bodyFontSize)
+	pdf.SetFont(fontName, "", bodyFontSize)
 	pdf.CellFormat(contentWidth, lineHeight, cert.Title, "", 1, "L", false, 0, "")
 
 	if cert.Subtitle != "" {
@@ -400,7 +402,7 @@ func drawCertification(pdf *fpdf.Fpdf, cert Certification) {
 }
 
 func drawBullet(pdf *fpdf.Fpdf, text string) {
-	pdf.SetFont("Inter", "", bodyFontSize)
+	pdf.SetFont(fontName, "", bodyFontSize)
 	pdf.SetTextColor(40, 40, 40)
 	const bulletLeft = 4.0
 	const indent = 6.0
