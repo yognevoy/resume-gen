@@ -6,7 +6,7 @@ A command-line tool that generates a PDF resume from a JSON file.
 
 resume-gen reads a JSON file with resume content and produces a formatted PDF.
 
-![resume-gen preview](src/image.png)
+![Resume preview](src/image.png)
 
 ## Installation
 
