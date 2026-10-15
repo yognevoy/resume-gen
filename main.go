@@ -37,6 +37,15 @@ const (
 	bulletLeft      = 4.0
 	bulletIndent    = 6.0
 	bulletTextWidth = contentWidth - bulletLeft - bulletIndent
+
+	photoSize = 30.0
+	photoGap  = 8.0
+
+	nameLineHeight     = 11.0
+	nameGap            = 1.0
+	positionLineHeight = 6.0
+	contactsGap        = 2.0
+	contactsLineHeight = 5.0
 )
 
 type Contact struct {
@@ -121,6 +130,7 @@ type Sections struct {
 type Resume struct {
 	Name     string    `json:"name"`
 	Position string    `json:"position"`
+	Photo    string    `json:"photo"`
 	Contacts []Contact `json:"contacts"`
 	Sections Sections  `json:"sections"`
 }
@@ -202,17 +212,35 @@ func generatePDF(resume *Resume, outputPath string) error {
 }
 
 func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
+	textWidth := contentWidth
+	textX := marginLeft
+	if resume.Photo != "" {
+		drawPhoto(pdf, resume.Photo, marginLeft, marginTop, photoSize)
+		textWidth = contentWidth - 2*(photoSize+photoGap)
+		textX = marginLeft + photoSize + photoGap
+
+		textBlockHeight := nameLineHeight + nameGap + positionLineHeight
+		if len(resume.Contacts) > 0 {
+			textBlockHeight += contactsGap + contactsLineHeight
+		}
+		if textBlockHeight < photoSize {
+			pdf.SetY(marginTop + (photoSize-textBlockHeight)/2)
+		}
+	}
+
 	pdf.SetTextColor(20, 20, 20)
 	pdf.SetFont(fontName, "B", nameFontSize)
-	pdf.CellFormat(contentWidth, 11, resume.Name, "", 1, "C", false, 0, "")
+	pdf.SetX(textX)
+	pdf.CellFormat(textWidth, nameLineHeight, resume.Name, "", 1, "C", false, 0, "")
 
-	pdf.Ln(1)
+	pdf.Ln(nameGap)
 	pdf.SetFont(fontName, "", positionFontSize)
 	pdf.SetTextColor(80, 80, 80)
-	pdf.CellFormat(contentWidth, 6, resume.Position, "", 1, "C", false, 0, "")
+	pdf.SetX(textX)
+	pdf.CellFormat(textWidth, positionLineHeight, resume.Position, "", 1, "C", false, 0, "")
 
 	if len(resume.Contacts) > 0 {
-		pdf.Ln(2)
+		pdf.Ln(contactsGap)
 		pdf.SetTextColor(80, 80, 80)
 
 		const sep = "   |   "
@@ -230,7 +258,7 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 			}
 		}
 
-		x := marginLeft + (contentWidth-totalWidth)/2
+		x := textX + (textWidth-totalWidth)/2
 		y := pdf.GetY()
 
 		for i, c := range resume.Contacts {
@@ -241,22 +269,39 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 			pdf.SetFont(fontName, "U", contactFontSize)
 			w := pdf.GetStringWidth(text)
 			pdf.SetXY(x, y)
-			pdf.CellFormat(w, 5, text, "", 0, "L", false, 0, c.URL)
+			pdf.CellFormat(w, contactsLineHeight, text, "", 0, "L", false, 0, c.URL)
 			x += w
 
 			if i < len(resume.Contacts)-1 {
 				pdf.SetFont(fontName, "", contactFontSize)
 				sepW := pdf.GetStringWidth(sep)
 				pdf.SetXY(x, y)
-				pdf.CellFormat(sepW, 5, sep, "", 0, "L", false, 0, "")
+				pdf.CellFormat(sepW, contactsLineHeight, sep, "", 0, "L", false, 0, "")
 				x += sepW
 			}
 		}
 
-		pdf.SetY(y + 5)
+		pdf.SetY(y + contactsLineHeight)
+	}
+
+	if resume.Photo != "" {
+		if photoBottom := marginTop + photoSize; pdf.GetY() < photoBottom {
+			pdf.SetY(photoBottom)
+		}
 	}
 
 	pdf.Ln(6)
+}
+
+func drawPhoto(pdf *fpdf.Fpdf, path string, x, y, diameter float64) {
+	if _, err := os.Stat(path); err != nil {
+		return
+	}
+
+	r := diameter / 2
+	pdf.ClipCircle(x+r, y+r, r, false)
+	pdf.ImageOptions(path, x, y, diameter, diameter, false, fpdf.ImageOptions{}, 0, "")
+	pdf.ClipEnd()
 }
 
 func drawSectionTitle(pdf *fpdf.Fpdf, title string) {
