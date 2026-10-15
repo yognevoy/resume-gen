@@ -406,11 +406,23 @@ func drawBullet(pdf *fpdf.Fpdf, text string) {
 	pdf.SetTextColor(40, 40, 40)
 	const bulletLeft = 4.0
 	const indent = 6.0
+	textWidth := contentWidth - bulletLeft - indent
+
+	lines := pdf.SplitText(text, textWidth)
+	height := float64(len(lines)) * lineHeight
+
+	_, pageH := pdf.GetPageSize()
+	usableHeight := pageH - marginTop - marginBottom
+	remaining := pageH - marginBottom - pdf.GetY()
+	if height <= usableHeight && height > remaining {
+		pdf.AddPage()
+	}
+
 	pdf.SetX(marginLeft + bulletLeft)
 	pdf.CellFormat(indent, lineHeight, "\u2022", "", 0, "L", false, 0, "")
 	pdf.SetLeftMargin(marginLeft + bulletLeft + indent)
 	pdf.SetX(marginLeft + bulletLeft + indent)
-	pdf.MultiCell(contentWidth-bulletLeft-indent, lineHeight, text, "", "L", false)
+	pdf.MultiCell(textWidth, lineHeight, text, "", "L", false)
 	pdf.SetLeftMargin(marginLeft)
 }
 
