@@ -33,6 +33,10 @@ const (
 	bodyFontSize     = 10.0
 	lineHeight       = 5.5
 	minSectionSpace  = 35.0
+
+	bulletLeft      = 4.0
+	bulletIndent    = 6.0
+	bulletTextWidth = contentWidth - bulletLeft - bulletIndent
 )
 
 type Contact struct {
@@ -342,6 +346,14 @@ func drawJob(pdf *fpdf.Fpdf, job Job) {
 	pdf.Ln(3)
 
 	for _, group := range job.Groups {
+		labelHeight := lineHeight + 1
+		if len(group.Bullets) > 0 {
+			pdf.SetFont(fontName, "", bodyFontSize)
+			lines := pdf.SplitText(group.Bullets[0], bulletTextWidth)
+			labelHeight += float64(len(lines)) * lineHeight
+		}
+		ensureSpace(pdf, labelHeight)
+
 		pdf.SetFont(fontName, "B", bodyFontSize)
 		pdf.SetTextColor(40, 40, 40)
 		pdf.CellFormat(contentWidth, lineHeight, group.Label, "", 1, "L", false, 0, "")
@@ -401,28 +413,27 @@ func drawCertification(pdf *fpdf.Fpdf, cert Certification) {
 	pdf.Ln(3)
 }
 
-func drawBullet(pdf *fpdf.Fpdf, text string) {
-	pdf.SetFont(fontName, "", bodyFontSize)
-	pdf.SetTextColor(40, 40, 40)
-	const bulletLeft = 4.0
-	const indent = 6.0
-	textWidth := contentWidth - bulletLeft - indent
-
-	lines := pdf.SplitText(text, textWidth)
-	height := float64(len(lines)) * lineHeight
-
+func ensureSpace(pdf *fpdf.Fpdf, height float64) {
 	_, pageH := pdf.GetPageSize()
 	usableHeight := pageH - marginTop - marginBottom
 	remaining := pageH - marginBottom - pdf.GetY()
 	if height <= usableHeight && height > remaining {
 		pdf.AddPage()
 	}
+}
+
+func drawBullet(pdf *fpdf.Fpdf, text string) {
+	pdf.SetFont(fontName, "", bodyFontSize)
+	pdf.SetTextColor(40, 40, 40)
+
+	lines := pdf.SplitText(text, bulletTextWidth)
+	ensureSpace(pdf, float64(len(lines))*lineHeight)
 
 	pdf.SetX(marginLeft + bulletLeft)
-	pdf.CellFormat(indent, lineHeight, "\u2022", "", 0, "L", false, 0, "")
-	pdf.SetLeftMargin(marginLeft + bulletLeft + indent)
-	pdf.SetX(marginLeft + bulletLeft + indent)
-	pdf.MultiCell(textWidth, lineHeight, text, "", "L", false)
+	pdf.CellFormat(bulletIndent, lineHeight, "\u2022", "", 0, "L", false, 0, "")
+	pdf.SetLeftMargin(marginLeft + bulletLeft + bulletIndent)
+	pdf.SetX(marginLeft + bulletLeft + bulletIndent)
+	pdf.MultiCell(bulletTextWidth, lineHeight, text, "", "L", false)
 	pdf.SetLeftMargin(marginLeft)
 }
 
