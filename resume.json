@@ -67,6 +67,15 @@
         }
       ]
     },
+    "projects": {
+      "title": "Projects & Contributions",
+      "entries": [
+        {
+          "title": "resume-gen",
+          "description": "CLI tool to generate PDF resumes from JSON content."
+        }
+      ]
+    },
     "education": {
       "title": "Education",
       "entries": [
