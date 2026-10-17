@@ -46,6 +46,7 @@ const (
 	positionLineHeight = 6.0
 	contactsGap        = 2.0
 	contactsLineHeight = 5.0
+	contactsWrapGap    = 1.5
 	contactsSeparator  = "   |   "
 )
 
@@ -247,6 +248,7 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 		textBlockHeight := nameLineHeight + nameGap + positionLineHeight
 		if len(contactLines) > 0 {
 			textBlockHeight += contactsGap + float64(len(contactLines))*contactsLineHeight
+			textBlockHeight += float64(len(contactLines)-1) * contactsWrapGap
 		}
 		if textBlockHeight < photoSize {
 			pdf.SetY(marginTop + (photoSize-textBlockHeight)/2)
@@ -322,7 +324,7 @@ func drawContacts(pdf *fpdf.Fpdf, lines [][]Contact, textX, textWidth float64) {
 
 	y := pdf.GetY()
 
-	for _, line := range lines {
+	for idx, line := range lines {
 		pdf.SetFont(fontName, "", contactFontSize)
 		lineWidth := 0.0
 		for i, c := range line {
@@ -358,6 +360,9 @@ func drawContacts(pdf *fpdf.Fpdf, lines [][]Contact, textX, textWidth float64) {
 		}
 
 		y += contactsLineHeight
+		if idx < len(lines)-1 {
+			y += contactsWrapGap
+		}
 	}
 
 	pdf.SetY(y)
