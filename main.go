@@ -143,6 +143,7 @@ type Sections struct {
 type Resume struct {
 	Name     string    `json:"name"`
 	Position string    `json:"position"`
+	Location string    `json:"location"`
 	Photo    string    `json:"photo"`
 	Contacts []Contact `json:"contacts"`
 	Sections Sections  `json:"sections"`
@@ -246,6 +247,9 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 		drawPhoto(pdf, resume.Photo, marginLeft, marginTop, photoSize)
 
 		textBlockHeight := nameLineHeight + nameGap + positionLineHeight
+		if resume.Location != "" {
+			textBlockHeight += contactsGap + contactsLineHeight
+		}
 		if len(contactLines) > 0 {
 			textBlockHeight += contactsGap + float64(len(contactLines))*contactsLineHeight
 			textBlockHeight += float64(len(contactLines)-1) * contactsWrapGap
@@ -265,6 +269,11 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 	pdf.SetTextColor(80, 80, 80)
 	pdf.SetX(textX)
 	pdf.CellFormat(textWidth, positionLineHeight, resume.Position, "", 1, "C", false, 0, "")
+
+	if resume.Location != "" {
+		pdf.Ln(contactsGap)
+		drawLocation(pdf, resume.Location, textX, textWidth)
+	}
 
 	if len(contactLines) > 0 {
 		pdf.Ln(contactsGap)
@@ -315,6 +324,13 @@ func wrapContacts(pdf *fpdf.Fpdf, contacts []Contact, maxWidth float64) [][]Cont
 	}
 
 	return append(lines, current)
+}
+
+func drawLocation(pdf *fpdf.Fpdf, location string, textX, textWidth float64) {
+	pdf.SetFont(fontName, "", contactFontSize)
+	pdf.SetTextColor(80, 80, 80)
+	pdf.SetX(textX)
+	pdf.CellFormat(textWidth, contactsLineHeight, location, "", 1, "C", false, 0, "")
 }
 
 func drawContacts(pdf *fpdf.Fpdf, lines [][]Contact, textX, textWidth float64) {
