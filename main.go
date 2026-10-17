@@ -88,6 +88,11 @@ type Certification struct {
 	Subtitle string `json:"subtitle"`
 }
 
+type Project struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
 type AboutSection struct {
 	Title string `json:"title"`
 	Text  string `json:"text"`
@@ -101,6 +106,11 @@ type SkillsSection struct {
 type ExperienceSection struct {
 	Title   string `json:"title"`
 	Entries []Job  `json:"entries"`
+}
+
+type ProjectsSection struct {
+	Title   string    `json:"title"`
+	Entries []Project `json:"entries"`
 }
 
 type EducationSection struct {
@@ -122,6 +132,7 @@ type Sections struct {
 	About          *AboutSection          `json:"about"`
 	Skills         *SkillsSection         `json:"skills"`
 	Experience     *ExperienceSection     `json:"experience"`
+	Projects       *ProjectsSection       `json:"projects"`
 	Education      *EducationSection      `json:"education"`
 	Courses        *CoursesSection        `json:"courses"`
 	Certifications *CertificationsSection `json:"certifications"`
@@ -183,6 +194,13 @@ func generatePDF(resume *Resume, outputPath string) error {
 		drawSection(pdf, s.Experience.Title, func() {
 			for _, e := range s.Experience.Entries {
 				drawJob(pdf, e)
+			}
+		})
+	}
+	if s.Projects != nil {
+		drawSection(pdf, s.Projects.Title, func() {
+			for _, p := range s.Projects.Entries {
+				drawProject(pdf, p)
 			}
 		})
 	}
@@ -453,6 +471,19 @@ func drawCertification(pdf *fpdf.Fpdf, cert Certification) {
 	if cert.Subtitle != "" {
 		pdf.SetTextColor(60, 60, 60)
 		pdf.CellFormat(contentWidth, lineHeight, cert.Subtitle, "", 1, "L", false, 0, "")
+	}
+
+	pdf.Ln(3)
+}
+
+func drawProject(pdf *fpdf.Fpdf, project Project) {
+	pdf.SetTextColor(20, 20, 20)
+	pdf.SetFont(fontName, "", bodyFontSize)
+	pdf.CellFormat(contentWidth, lineHeight, project.Title, "", 1, "L", false, 0, "")
+
+	if project.Description != "" {
+		pdf.SetTextColor(60, 60, 60)
+		pdf.MultiCell(contentWidth, lineHeight, project.Description, "", "L", false)
 	}
 
 	pdf.Ln(3)
