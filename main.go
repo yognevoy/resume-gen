@@ -46,6 +46,7 @@ const (
 	positionLineHeight = 6.0
 	contactsGap        = 2.0
 	contactsLineHeight = 5.0
+	contactsSeparator  = "   |   "
 )
 
 type Contact struct {
@@ -233,13 +234,19 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 	textWidth := contentWidth
 	textX := marginLeft
 	if resume.Photo != "" {
-		drawPhoto(pdf, resume.Photo, marginLeft, marginTop, photoSize)
 		textWidth = contentWidth - 2*(photoSize+photoGap)
 		textX = marginLeft + photoSize + photoGap
+	}
+
+	pdf.SetFont(fontName, "", contactFontSize)
+	contactLines := wrapContacts(pdf, resume.Contacts, textWidth)
+
+	if resume.Photo != "" {
+		drawPhoto(pdf, resume.Photo, marginLeft, marginTop, photoSize)
 
 		textBlockHeight := nameLineHeight + nameGap + positionLineHeight
-		if len(resume.Contacts) > 0 {
-			textBlockHeight += contactsGap + contactsLineHeight
+		if len(contactLines) > 0 {
+			textBlockHeight += contactsGap + float64(len(contactLines))*contactsLineHeight
 		}
 		if textBlockHeight < photoSize {
 			pdf.SetY(marginTop + (photoSize-textBlockHeight)/2)
@@ -257,29 +264,81 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 	pdf.SetX(textX)
 	pdf.CellFormat(textWidth, positionLineHeight, resume.Position, "", 1, "C", false, 0, "")
 
-	if len(resume.Contacts) > 0 {
+	if len(contactLines) > 0 {
 		pdf.Ln(contactsGap)
-		pdf.SetTextColor(80, 80, 80)
+		drawContacts(pdf, contactLines, textX, textWidth)
+	}
 
-		const sep = "   |   "
+	if resume.Photo != "" {
+		if photoBottom := marginTop + photoSize; pdf.GetY() < photoBottom {
+			pdf.SetY(photoBottom)
+		}
+	}
+
+	pdf.Ln(6)
+}
+
+func wrapContacts(pdf *fpdf.Fpdf, contacts []Contact, maxWidth float64) [][]Contact {
+	if len(contacts) == 0 {
+		return nil
+	}
+
+	sepWidth := pdf.GetStringWidth(contactsSeparator)
+
+	var lines [][]Contact
+	var current []Contact
+	currentWidth := 0.0
+
+	for _, c := range contacts {
+		text := c.Value
+		if c.Label != "" {
+			text = c.Label
+		}
+
+		w := pdf.GetStringWidth(text)
+		addWidth := w
+		if len(current) > 0 {
+			addWidth += sepWidth
+		}
+
+		if len(current) > 0 && currentWidth+addWidth > maxWidth {
+			lines = append(lines, current)
+			current = nil
+			currentWidth = 0
+			addWidth = w
+		}
+
+		current = append(current, c)
+		currentWidth += addWidth
+	}
+
+	return append(lines, current)
+}
+
+func drawContacts(pdf *fpdf.Fpdf, lines [][]Contact, textX, textWidth float64) {
+	pdf.SetTextColor(80, 80, 80)
+	pdf.SetFont(fontName, "", contactFontSize)
+	sepWidth := pdf.GetStringWidth(contactsSeparator)
+
+	y := pdf.GetY()
+
+	for _, line := range lines {
 		pdf.SetFont(fontName, "", contactFontSize)
-
-		totalWidth := 0.0
-		for i, c := range resume.Contacts {
+		lineWidth := 0.0
+		for i, c := range line {
 			text := c.Value
 			if c.Label != "" {
 				text = c.Label
 			}
-			totalWidth += pdf.GetStringWidth(text)
-			if i < len(resume.Contacts)-1 {
-				totalWidth += pdf.GetStringWidth(sep)
+			lineWidth += pdf.GetStringWidth(text)
+			if i < len(line)-1 {
+				lineWidth += sepWidth
 			}
 		}
 
-		x := textX + (textWidth-totalWidth)/2
-		y := pdf.GetY()
+		x := textX + (textWidth-lineWidth)/2
 
-		for i, c := range resume.Contacts {
+		for i, c := range line {
 			text := c.Value
 			if c.Label != "" {
 				text = c.Label
@@ -290,25 +349,18 @@ func drawHeader(pdf *fpdf.Fpdf, resume *Resume) {
 			pdf.CellFormat(w, contactsLineHeight, text, "", 0, "L", false, 0, c.URL)
 			x += w
 
-			if i < len(resume.Contacts)-1 {
+			if i < len(line)-1 {
 				pdf.SetFont(fontName, "", contactFontSize)
-				sepW := pdf.GetStringWidth(sep)
 				pdf.SetXY(x, y)
-				pdf.CellFormat(sepW, contactsLineHeight, sep, "", 0, "L", false, 0, "")
-				x += sepW
+				pdf.CellFormat(sepWidth, contactsLineHeight, contactsSeparator, "", 0, "L", false, 0, "")
+				x += sepWidth
 			}
 		}
 
-		pdf.SetY(y + contactsLineHeight)
+		y += contactsLineHeight
 	}
 
-	if resume.Photo != "" {
-		if photoBottom := marginTop + photoSize; pdf.GetY() < photoBottom {
-			pdf.SetY(photoBottom)
-		}
-	}
-
-	pdf.Ln(6)
+	pdf.SetY(y)
 }
 
 func drawPhoto(pdf *fpdf.Fpdf, path string, x, y, diameter float64) {
