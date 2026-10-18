@@ -106,6 +106,15 @@
           "subtitle": "Amazon Web Services"
         }
       ]
+    },
+    "languages": {
+      "title": "Languages",
+      "entries": [
+        {
+          "title": "English",
+          "subtitle": "Fluent"
+        }
+      ]
     }
   }
 }

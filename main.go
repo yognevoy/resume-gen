@@ -90,6 +90,11 @@ type Certification struct {
 	Subtitle string `json:"subtitle"`
 }
 
+type Language struct {
+	Title    string `json:"title"`
+	Subtitle string `json:"subtitle"`
+}
+
 type Project struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
@@ -130,6 +135,11 @@ type CertificationsSection struct {
 	Entries []Certification `json:"entries"`
 }
 
+type LanguagesSection struct {
+	Title   string     `json:"title"`
+	Entries []Language `json:"entries"`
+}
+
 type Sections struct {
 	About          *AboutSection          `json:"about"`
 	Skills         *SkillsSection         `json:"skills"`
@@ -138,6 +148,7 @@ type Sections struct {
 	Education      *EducationSection      `json:"education"`
 	Courses        *CoursesSection        `json:"courses"`
 	Certifications *CertificationsSection `json:"certifications"`
+	Languages      *LanguagesSection      `json:"languages"`
 }
 
 type Resume struct {
@@ -225,6 +236,13 @@ func generatePDF(resume *Resume, outputPath string) error {
 		drawSection(pdf, s.Certifications.Title, func() {
 			for _, e := range s.Certifications.Entries {
 				drawCertification(pdf, e)
+			}
+		})
+	}
+	if s.Languages != nil {
+		drawSection(pdf, s.Languages.Title, func() {
+			for _, e := range s.Languages.Entries {
+				drawLanguage(pdf, e)
 			}
 		})
 	}
@@ -509,6 +527,19 @@ func drawJob(pdf *fpdf.Fpdf, job Job) {
 	pdf.Ln(2)
 }
 
+func drawProject(pdf *fpdf.Fpdf, project Project) {
+	pdf.SetTextColor(20, 20, 20)
+	pdf.SetFont(fontName, "", bodyFontSize)
+	pdf.CellFormat(contentWidth, lineHeight, project.Title, "", 1, "L", false, 0, "")
+
+	if project.Description != "" {
+		pdf.SetTextColor(60, 60, 60)
+		pdf.MultiCell(contentWidth, lineHeight, project.Description, "", "L", false)
+	}
+
+	pdf.Ln(3)
+}
+
 func drawDegree(pdf *fpdf.Fpdf, degree Degree) {
 	pdf.SetTextColor(20, 20, 20)
 	pdf.SetFont(fontName, "B", bodyFontSize)
@@ -549,14 +580,14 @@ func drawCertification(pdf *fpdf.Fpdf, cert Certification) {
 	pdf.Ln(3)
 }
 
-func drawProject(pdf *fpdf.Fpdf, project Project) {
+func drawLanguage(pdf *fpdf.Fpdf, language Language) {
 	pdf.SetTextColor(20, 20, 20)
 	pdf.SetFont(fontName, "", bodyFontSize)
-	pdf.CellFormat(contentWidth, lineHeight, project.Title, "", 1, "L", false, 0, "")
+	pdf.CellFormat(contentWidth, lineHeight, language.Title, "", 1, "L", false, 0, "")
 
-	if project.Description != "" {
+	if language.Subtitle != "" {
 		pdf.SetTextColor(60, 60, 60)
-		pdf.MultiCell(contentWidth, lineHeight, project.Description, "", "L", false)
+		pdf.CellFormat(contentWidth, lineHeight, language.Subtitle, "", 1, "L", false, 0, "")
 	}
 
 	pdf.Ln(3)
