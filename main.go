@@ -527,6 +527,19 @@ func drawJob(pdf *fpdf.Fpdf, job Job) {
 	pdf.Ln(2)
 }
 
+func drawProject(pdf *fpdf.Fpdf, project Project) {
+	pdf.SetTextColor(20, 20, 20)
+	pdf.SetFont(fontName, "", bodyFontSize)
+	pdf.CellFormat(contentWidth, lineHeight, project.Title, "", 1, "L", false, 0, "")
+
+	if project.Description != "" {
+		pdf.SetTextColor(60, 60, 60)
+		pdf.MultiCell(contentWidth, lineHeight, project.Description, "", "L", false)
+	}
+
+	pdf.Ln(3)
+}
+
 func drawDegree(pdf *fpdf.Fpdf, degree Degree) {
 	pdf.SetTextColor(20, 20, 20)
 	pdf.SetFont(fontName, "B", bodyFontSize)
@@ -575,19 +588,6 @@ func drawLanguage(pdf *fpdf.Fpdf, language Language) {
 	if language.Subtitle != "" {
 		pdf.SetTextColor(60, 60, 60)
 		pdf.CellFormat(contentWidth, lineHeight, language.Subtitle, "", 1, "L", false, 0, "")
-	}
-
-	pdf.Ln(3)
-}
-
-func drawProject(pdf *fpdf.Fpdf, project Project) {
-	pdf.SetTextColor(20, 20, 20)
-	pdf.SetFont(fontName, "", bodyFontSize)
-	pdf.CellFormat(contentWidth, lineHeight, project.Title, "", 1, "L", false, 0, "")
-
-	if project.Description != "" {
-		pdf.SetTextColor(60, 60, 60)
-		pdf.MultiCell(contentWidth, lineHeight, project.Description, "", "L", false)
 	}
 
 	pdf.Ln(3)
